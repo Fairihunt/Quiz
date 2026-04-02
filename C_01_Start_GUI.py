@@ -52,37 +52,37 @@ class StartGame:
         self.entry_area_frame = Frame(self.start_frame)
         self.entry_area_frame.grid(row=3)
 
-        self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", 20, "bold"),
+        self.num_questions_entry = Entry(self.entry_area_frame, font=("Arial", 20, "bold"),
                                       width=10)
-        self.num_rounds_entry.grid(row=0, column=0, padx=10, pady=10)
+        self.num_questions_entry.grid(row=0, column=0, padx=10, pady=10)
 
         # Create play button...
         self.play_button = Button(self.entry_area_frame, font=("Arial", 16, "bold"),
-                                  fg="#FFFFFF", bg="#005708", text="Play", width=10,
-                                  command=self.check_rounds)
-        self.play_button.grid(row=0, column=1)
+                                  fg="#FFFFFF", bg="#B5739D", text="Play", width=10,
+                                  command=self.check_questions)
+        self.play_button.grid(row=0, column=2)
 
-    def check_rounds(self):
+    def check_questions(self):
         """
-        Check users have entered 1 or more rounds
+        Check users have entered 1 or more questions
         """
 
         # Retrieve temperature to be converted
-        rounds_wanted = self.num_rounds_entry.get()
+        questions_wanted = self.num_questions_entry.get()
 
         # Reset label and entry box (for when users come back to home screen)
         self.choose_label.config(fg="#009900", font=("Arial", 12, "bold"))
-        self.num_rounds_entry.config(bg="#FFFFFF")
+        self.num_questions_entry.config(bg="#FFFFFF")
 
         error = "Oops - Please choose a whole number more than zero"
         has_errors = "no"
 
         # checks that amount to be converted is a number above absolute zero
         try:
-            rounds_wanted = int(rounds_wanted)
-            if rounds_wanted > 0:
+            questions_wanted = int(questions_wanted)
+            if questions_wanted > 0:
                 # temporary success message, replace with call to PlayGame class
-                self.choose_label.config(text=f"You have chosen to play {rounds_wanted} rounds")
+                self.choose_label.config(text=f"You have chosen to answer {questions_wanted} questions")
             else:
                 has_errors = "yes"
 
@@ -93,8 +93,8 @@ class StartGame:
         if has_errors == "yes":
             self.choose_label.config(text=error, fg="#990000",
                                      font=("Arial", 10, "bold"))
-            self.num_rounds_entry.config(bg="#F4CCCC")
-            self.num_rounds_entry.delete(0, END)
+            self.num_questions_entry.config(bg="#F4CCCC")
+            self.num_questions_entry.delete(0, END)
 
 class Play:
     """
