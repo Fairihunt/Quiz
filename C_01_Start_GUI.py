@@ -20,7 +20,7 @@ class StartGame:
         # Strings for labels
         intro_string = ("This quiz will ask questions about the study of certain topics. "
                         "There is no goal but to improve your knowledge and revision on the "
-                        "words of each topic - you can mix it up and challenge yourself too. \n\n"
+                        "words of each topic. \n\n"
                         "Try your best and good luck!")
 
         # choose_string = "Oops - Please choose a whole number more than zero."
@@ -30,7 +30,7 @@ class StartGame:
         start_labels_list = [
             ["Study of...? Quiz", ("Arial", 16, "bold"), None],
             [intro_string, ("Arial", 12), None],
-            [choose_string, ("Arial", 12, "bold"), "#009900"]
+            [choose_string, ("Arial", 11, "bold"), "#000000"]
         ]
 
         # Create labels and add them to the reference list
@@ -58,7 +58,7 @@ class StartGame:
 
         # Create play button...
         self.play_button = Button(self.entry_area_frame, font=("Arial", 16, "bold"),
-                                  fg="#FFFFFF", bg="#B5739D", text="Play", width=10,
+                                  fg="#FFFFFF", bg="#000000", text="Play", width=10,
                                   command=self.check_questions)
         self.play_button.grid(row=0, column=2)
 
