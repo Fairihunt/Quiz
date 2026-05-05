@@ -13,13 +13,13 @@ from functools import partial # To prevent unwanted windows
 
 class StartGame:
     """
-    Initial Game interface (asks users how many rounds they
+    Initial Game interface (asks users how many questions they
     would like to play
     """
 
     def __init__(self):
         """
-        Gets number of rounds from user
+        Gets number of questions from user
         """
 
         self.start_frame = Frame(padx=10, pady=10)
@@ -38,7 +38,7 @@ class StartGame:
         start_labels_list = [
             ["Study of...? Quiz", ("Arial", 16, "bold"), None],
             [intro_string, ("Arial", 12), None],
-            [choose_string, ("Arial", 12, "bold"), "#009900"]
+            [choose_string, ("Arial", 12, "bold"), "#000000"]
         ]
 
         # Create labels and add them to the reference list
@@ -60,43 +60,43 @@ class StartGame:
         self.entry_area_frame = Frame(self.start_frame)
         self.entry_area_frame.grid(row=3)
 
-        self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", 20, "bold"),
+        self.num_questions_entry = Entry(self.entry_area_frame, font=("Arial", 20, "bold"),
                                       width=10)
-        self.num_rounds_entry.grid(row=0, column=0, padx=10, pady=10)
+        self.num_questions_entry.grid(row=0, column=0, padx=10, pady=10)
 
         # Create play button...
         self.play_button = Button(self.entry_area_frame, font=("Arial", 16, "bold"),
-                                  fg="#FFFFFF", bg="#005708", text="Play", width=10,
-                                  command=self.check_rounds)
-        self.play_button.grid(row=0, column=1)
+                                  fg="#FFFFFF", bg="#000000", text="Play", width=15,
+                                  command=self.check_questions)
+        self.play_button.grid(row=1, column=0)
 
-    def check_rounds(self):
+    def check_questions(self):
         """
-        Check users have entered 1 or more rounds
+        Check users have entered 1 or more questions
         """
 
         # Retrieve temperature to be converted
-        rounds_wanted = self.num_rounds_entry.get()
+        questions_wanted = self.num_questions_entry.get()
 
         # Reset label and entry box (for when users come back to home screen)
         self.choose_label.config(fg="#009900", font=("Arial", 12, "bold"))
-        self.num_rounds_entry.config(bg="#FFFFFF")
+        self.num_questions_entry.config(bg="#FFFFFF")
 
         error = "Oops - Please choose a whole number more than zero"
         has_errors = "no"
 
         # checks that amount to be converted is a number above absolute zero
         try:
-            rounds_wanted = int(rounds_wanted)
-            if rounds_wanted > 0:
+            questions_wanted = int(questions_wanted)
+            if questions_wanted > 0:
                 # Clear entry box and reset instruction label so
                 # that when users play a new game, they don't see an error message.
-                self.num_rounds_entry.delete(0, END)
-                self.choose_label.config(text="How many rounds do you want to play?")
+                self.num_questions_entry.delete(0, END)
+                self.choose_label.config(text="How many questions do you want to play?")
 
-                # Invoke Play Class (and take across number of rounds)
-                Play(rounds_wanted)
-                # Hide root window (ie: hide rounds choice window)
+                # Invoke Play Class (and take across number of questions)
+                Play(questions_wanted)
+                # Hide root window (ie: hide questions choice window)
                 root.withdraw()
             else:
                 has_errors = "yes"
@@ -108,8 +108,8 @@ class StartGame:
         if has_errors == "yes":
             self.choose_label.config(text=error, fg="#990000",
                                      font=("Arial", 10, "bold"))
-            self.num_rounds_entry.config(bg="#F4CCCC")
-            self.num_rounds_entry.delete(0, END)
+            self.num_questions_entry.config(bg="#F4CCCC")
+            self.num_questions_entry.delete(0, END)
 
 
 class Play:
@@ -122,20 +122,16 @@ class Play:
         # Integers / String Variables
         self.target_score = IntVar()
 
-        # rounds played - start with zero
-        self.rounds_played = IntVar()
-        self.rounds_played.set(0)
+        # questions played - start with zero
+        self.questions_played = IntVar()
+        self.questions_played.set(0)
 
-        self.rounds_wanted = IntVar()
-        self.rounds_wanted.set(how_many)
+        self.questions_wanted = IntVar()
+        self.questions_wanted.set(how_many)
 
-        self.rounds_won = IntVar()
+        self.questions_won = IntVar()
 
 
-        # Colour lists and score list
-        self.round_colour_list = []
-        self.all_scores_list = []
-        self.all_high_score_list = []
 
         self.play_box = Toplevel()
 
@@ -152,7 +148,7 @@ class Play:
         play_labels_list = [
             ["Round # of #", ("Arial", 16, "bold"), None, 0],
             ["Score to beat: #", body_font, "#FFF2CC", 1],
-            ["Choose a colour below. Good luck. 🍀", body_font, "#D5E8D4", 2],
+            ["Choose an answer below to the question. Good luck. 🍀", body_font, "#D5E8D4", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
         ]
 
@@ -204,39 +200,23 @@ class Play:
 
 
 
-        self.new_round()
+        self.new_question()
 
-    def new_round(self):
+    def new_question(self):
         """
         Chooses four buttons, works out median for score to beat. Configures
         buttons with chosen colours
         """
 
-        # retrieve number of rounds played , add one to it and configure heading
-        rounds_played = self.rounds_played.get()
-        self.rounds_played.set(rounds_played)
+        # retrieve number of questions played , add one to it and configure heading
+        questions_played = self.questions_played.get()
+        self.questions_played.set(questions_played)
 
-        rounds_wanted = self.rounds_wanted.get()
-
-        # get round colours and median score...
-
-
-
-
-
-
-        # configure buttons using foreground and background colours from list
-        # enable colour buttons (disabled at the end of the last round)
-        for count, item in enumerate(self.colour_button_ref):
-            item.config(fg=self.round_colour_list[count][2],
-                        bg=self.round_colour_list[count][0],
-                        text=self.round_colour_list[count][0], state=NORMAL)
-
-        self.next_button.config(state=DISABLED)
+        questions_wanted = self.questions_wanted.get()
 
 
     def close_play(self):
-        # reshow root (ie:choose rounds) and end current
+        # reshow root (ie:choose questions) and end current
         # game / allow new game to start
         root.deiconify()
         self.play_box.destroy()
