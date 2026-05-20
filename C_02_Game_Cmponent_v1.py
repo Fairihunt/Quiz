@@ -44,6 +44,18 @@ def get_question_answers():
     return question_answers
 
 
+
+def round_ans(val):
+    """
+    Rounds numbers to nearest integer
+    :param val: number to be rounded.
+    :return: Rounded number (an integer)
+    """
+    var_rounded = (val * 2 +1) // 2
+    raw_rounded = "{:.0f}".format(var_rounded)
+    return int(raw_rounded)
+
+
 # Classes start here
 
 
@@ -197,7 +209,11 @@ class Play:
 
             play_labels_ref.append(self.make_label)
 
-
+        # Retrieve Labels so they can be configured later
+        self.heading_label = play_labels_ref[0]
+        self.target_label = play_labels_ref[1]
+        self.choose_label = play_labels_ref[2]
+        self.results_label = play_labels_ref[3]
 
 
         # set up answer buttons...
@@ -272,7 +288,12 @@ class Play:
         questions_wanted = self.questions_wanted.get()
 
         # get round colours and median score...
-        self.round_study_of_list, median, highest = get_question_answers()
+        self.round_study_of_list = get_question_answers()
+
+        # Update heading and score to beat labels. "Hide" results label
+        self.heading_label.config(text=f"Round {questions_played + 1} of {questions_wanted}")
+        self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
+
 
 
 
@@ -336,12 +357,21 @@ class Play:
                               f"({questions_won} / {questions_played} "
                               f"({success_rate:.0f}%)")
 
+           # Configure 'end game' labels /buttons
+            self.heading_label.config(text="Game Over")
+            self.target_label.config(text=success_string)
+            self.choose_label.config(text="Please click the stats "
+                                     "button for more info.")
+            self.next_button.config(state=DISABLED, text="Game Over")
+            self.end_game_button.config(text="Play Again", bg="#006600",
+                                        compound="right", width=25)
 
 
 
 
         for item in self.answer_button_ref:
             item.config(state=NORMAL)
+
 
 
     def to_hints(self):
@@ -362,7 +392,6 @@ class Play:
         # won as a number rather than the 'self' container
         questions_won = self.questions_won.get()
         questions_played = self.questions_played.get()
-
 
 
 
