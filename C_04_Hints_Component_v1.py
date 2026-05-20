@@ -45,17 +45,28 @@ class Play:
     Interface for playing the Quiz Game
     """
 
-    def  __init__(self, how_many):
-        self.playbox=Toplevel()
+    def __init__(self, how_many):
+        self.hints_button = Button(font=("Arial", 14, "bold"),
+                                   text="Hints", width=15, fg="#FFFFFF",
+                                   bg="#FF8000", padx=10, pady=10, command=self.hints_button)
+        self.hints_button.grid(row=1)
 
-        self.game_frame = Frame(self.play_box)
-        self.game_frame.grid(padx=10,pady=10)
 
+
+    def hints_button(self):
+        """
+        Display hints for playing game
+        :return:
+        """
+        DisplayHints(self)
 
 class DisplayHints:
     """
-    Show a hint for the quiz by disabling two answers
+    Disable two answers upon clicking on it.
     """
+
+
+
 
 
 

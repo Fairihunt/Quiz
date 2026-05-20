@@ -123,11 +123,11 @@ class Play:
         self.stats_button.grid(row=1)
 
 
+
     def to_stats(self):
         """
         Retrieve everything we need to display the game / round statistics
         """
-
 
 
 class Stats:
@@ -158,34 +158,34 @@ class Stats:
         self.stats_frame.grid()
 
         # Math to populate Stats dialogue
-        rounds_played = len(user_scores)
+        questions_answered = len(user_scores)
 
-        success_rate = rounds_won / rounds_played * 100
-        total_score = sum(user_scores)
-        max_possible = sum(high_scores)
+        success_rate = rounds_won / questions_answered * 100
+        incorrect_answers = sum(user_scores)
+        total_answers = sum(high_scores)
 
-        best_score = user_scores[-1]
-        average_score = total_score / rounds_played
+        correct_answers = user_scores[-1]
+        average_score = incorrect_answers / questions_answered
 
         # Strings for Stats label...
 
-        success_string = (f"Success Rate: {rounds_won} / {rounds_played}"
+        success_string = (f"Success Rate: {rounds_won} / {questions_answered}"
                           f" ({success_rate:.0f}%")
-        total_score_string = f"Total Score: {total_score}"
-        max_possible_string = f"Maximum Possible Score: {max_possible}"
-        best_score_string = f"Best Score: {best_score}"
+        incorrect_answers_string = f"Incorrect Answers: {incorrect_answers}"
+        total_answers_string = f"Total Answers: {total_answers}"
+        correct_answers_string = f"Correct Answers: {correct_answers}"
 
         # custom comment text and formatting
-        if total_score == max_possible:
+        if incorrect_answers == total_answers:
             comment_string = ("Amazing! You got the highest "
                               "possible score!")
             comment_colour = "#D5E8D4"
 
-        elif total_score == 0:
+        elif incorrect_answers == 0:
             comment_string = ("Oops - You've lost every round! "
                              )
             comment_colour = "#F8CECH"
-            best_score_string = f"Best Score: n/a"
+            correct_answers_string = f"Best Score: n/a"
         else:
             comment_string = ""
             comment_colour = "#F0F0F0"
@@ -199,11 +199,11 @@ class Stats:
         all_stats_strings = [
             ["Statistics", heading_font, ""],
             [success_string, normal_font, "W"],
-            [total_score_string, normal_font, "W"],
-            [max_possible_string, normal_font, "W"],
+            [incorrect_answers_string, normal_font, "W"],
+            [total_answers_string, normal_font, "W"],
             [comment_string, comment_font, "W"],
             ["\nRound Stats", heading_font, ""],
-            [best_score_string, normal_font, "W"],
+            [correct_answers_string, normal_font, "W"],
             [average_score_string, normal_font, "W"]
         ]
 
@@ -239,6 +239,6 @@ class Stats:
 # main routine
 if __name__ == "__main__":
     root = Tk()
-    root.title("Colour Quest")
+    root.title("Quiz")
     StartGame()
     root.mainloop()

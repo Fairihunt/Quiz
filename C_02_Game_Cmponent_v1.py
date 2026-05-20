@@ -5,7 +5,43 @@ from functools import partial # To prevent unwanted windows
 
 
 
+def get_questions():
+    """
+    Retrieves answers from csv file
+    :return: list of questions which where each list item has the
+    question, answer and foreground colour for the text
+    """
 
+    file = open("study_of.csv", "r")
+    all_questions = list(csv.reader(file, delimiter=","))
+    file.close()
+
+    # remove the first row
+    all_questions.pop(0)
+
+
+    return all_questions
+
+def get_question_answers():
+    """
+    Choose four answers from larger list ensuring that the answers are different
+    :return: list of answers
+    """
+
+    all_question_list = get_questions()
+
+    question_answers = []
+
+    # loop until we have four colours with different scores...
+    while len(question_answers) < 4:
+        potential_question = random.choice(all_question_list)
+
+        # colour scores are being read as a string,
+        # change them to an integer to compare / when adding to score list
+        if potential_question[1] not in question_answers:
+            question_answers.append(potential_question)
+
+    return question_answers
 
 
 # Classes start here
@@ -114,7 +150,7 @@ class StartGame:
 
 class Play:
     """
-    Interface for playing the Colour Quest Game
+    Interface for doing the quiz
     """
 
     def __init__(self, how_many):
@@ -131,7 +167,8 @@ class Play:
 
         self.questions_won = IntVar()
 
-
+        # Colour lists and score list
+        self.round_study_of = []
 
         self.play_box = Toplevel()
 
@@ -146,57 +183,77 @@ class Play:
 
         # List for label details (text | font | background | row
         play_labels_list = [
-            ["Round # of #", ("Arial", 16, "bold"), None, 0],
-            ["Score to beat: #", body_font, "#FFF2CC", 1],
-            ["Choose an answer below to the question. Good luck. 🍀", body_font, "#D5E8D4", 2],
+            ["Round # of #, #/# right", ("Arial", 16, "bold"), None, 0],
+            ["Choose a colour below. Good luck. 🍀", body_font, "#D5E8D4", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
         ]
 
         play_labels_ref = []
         for item in play_labels_list:
+            print("item", item)
             self.make_label = Label(self.game_frame, text=item[0], font=item[1],
                                     bg=item[2], wraplength=300, justify="left")
             self.make_label.grid(row=item[3], pady=10, padx=10)
 
             play_labels_ref.append(self.make_label)
 
-        # Retrieve Labels so they can be configured later
-        self.heading_label = play_labels_ref[0]
-        self.target_label = play_labels_ref[1]
-        self.choose_label = play_labels_ref[2]
-        self.results_label = play_labels_ref[3]
 
-        # set up colour buttons...
-        self.colour_frame = Frame(self.game_frame)
-        self.colour_frame.grid(row=3)
 
-        self.colour_button_ref = []
+
+        # set up answer buttons...
+        self.answer_frame = Frame(self.game_frame)
+        self.answer_frame.grid(row=3)
+
+        self.answer_button_ref = []
         self.button_colours_list = []
 
         # create four buttons in a 2 x 2 grid
         for item in range(0, 4):
-            self.colour_button = Button(self.colour_frame, font=("Arial", 12),
-                                        text="Colour Name", width=15,
+            self.answer_button = Button(self.answer_frame, font=("Arial", 12),
+                                        text="Placeholder", width=15,
                                         command=partial(self.question_results, item))
-            self.colour_button.grid(row=item // 2,
+            self.answer_button.grid(row=item // 2,
                                     column=item % 2,
                                     padx=5, pady=5)
 
-            self.colour_button_ref.append(self.colour_button)
+
+            self.answer_button_ref.append(self.answer_button)
 
             # Frame to hold hints and stats buttons
             self.hints_stats_frame = Frame(self.game_frame)
             self.hints_stats_frame.grid(row=6)
 
-
+            # list for buttons (frame | text | bg | command | width | row | column)
+            control_button_list = [
+                [self.game_frame, "Next Round", "#B9BCCC", self.new_question, 21, 5, None],
+                [self.hints_stats_frame, "Hints", "#D9CD94", self.to_hints, 10, 0, 0],
+                [self.hints_stats_frame, "Stats", "#B5C7AA", self.to_stats, 10, 0, 1],
+                [self.game_frame, "End", "#000000", self.close_play, 21, 7, None]
+            ]
 
             # create buttons and add to list
             control_ref_list = []
+            for item in control_button_list:
+                make_control_button = Button(item[0], text=item[1], bg=item[2],
+                                             command=item[3], font=("Arial", 16, "bold"),
+                                             fg="#FFFFFF", width=item[4])
+                make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
+
+                control_ref_list.append(make_control_button)
+
+            # Retrieve next, stats and end button so that they can be configured
+            self.next_button = control_ref_list[0]
+            self.hints_button = control_ref_list[1]
+            self.stats_button = control_ref_list[2]
+            self.end_game_button = control_ref_list[3]
 
 
+        # disable stats button at start so that users can't
+        # generate stats if they have not played any rounds
+        self.stats_button.config(state=DISABLED)
 
-
-
+        # Once interface has been created, invoke new
+        # round function for first round.
 
 
 
@@ -214,12 +271,100 @@ class Play:
 
         questions_wanted = self.questions_wanted.get()
 
+        # get round colours and median score...
+        self.round_study_of_list, median, highest = get_question_answers()
+
+
+
+
 
     def close_play(self):
         # reshow root (ie:choose questions) and end current
         # game / allow new game to start
         root.deiconify()
         self.play_box.destroy()
+
+        # configure buttons using foreground and background colours from list
+        # enable colour buttons (disabled at the end of the last round)
+        for count, item in enumerate(self.answer_button_ref):
+            item.config(fg=self.round_study_of[count][2],
+                        bg=self.round_study_of[count][0],
+                        text=self.round_study_of[count][0], state=NORMAL)
+
+
+        self.next_button.config(state=DISABLED)
+
+
+    def question_results(self, user_choice):
+        """
+        Retrieves which button was pushed (index 0 - 3), retrieves
+        score and then compares it with median, updates results and
+        adds results to stats list.
+        """
+
+
+        # Add one to the number of rounds played and retrieve
+        # the number of rounds won
+        questions_played = self.questions_played.get()
+        questions_played += 1
+        self.questions_played.set(questions_played)
+
+        questions_won = self.questions_won.get()
+
+        # alternate way to get button name. Good for if buttons have been scrambled!
+        colour_name = self.answer_button_ref[user_choice].cget('text')
+
+
+
+        questions_won = self.questions_won.get()
+        questions_won += 1
+        self.questions_won.set(questions_won)
+
+
+
+
+        # check to see if game is over
+        questions_wanted = self.questions_wanted.get()
+
+        # Code for when the game ends!
+        if questions_played == questions_wanted:
+
+
+            # work out success rate
+            success_rate = questions_won / questions_played * 100
+            success_string = (f"Success Rate: "
+                              f"({questions_won} / {questions_played} "
+                              f"({success_rate:.0f}%)")
+
+
+
+
+
+        for item in self.answer_button_ref:
+            item.config(state=NORMAL)
+
+
+    def to_hints(self):
+        """
+        Display hints for playing game. Prevents users from accessing
+        dialogues that could lead to the program crashing
+        :return:
+        """
+        # checks we have played at least one round so that
+        # stats button is not enabled in error.
+        questions_played = self.questions_played.get()
+
+    def to_stats(self):
+        """
+        Retrieves everything we need to display the game / round statistics"""
+
+        # IMPORTANT: retrieve number of rounds
+        # won as a number rather than the 'self' container
+        questions_won = self.questions_won.get()
+        questions_played = self.questions_played.get()
+
+
+
 
 
 # main routine
