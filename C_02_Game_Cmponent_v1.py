@@ -22,6 +22,7 @@ def get_questions():
 
     return all_questions
 
+
 def get_question_answers():
     """
     Choose four answers from larger list ensuring that the answers are different
@@ -41,7 +42,25 @@ def get_question_answers():
         if potential_question[1] not in question_answers:
             question_answers.append(potential_question)
 
+    print("question_answers: ", question_answers)
+
     return question_answers
+
+all_questions = get_question_answers()
+
+print("Wrong Answers...")
+
+print()
+print("Ology mode...")
+for item in all_questions[1:]:
+    print(item[0])
+
+print()
+print("Definition mode...")
+for item in all_questions[1:]:
+    print(item[1])
+
+
 
 
 
@@ -196,8 +215,9 @@ class Play:
         # List for label details (text | font | background | row
         play_labels_list = [
             ["Round # of #, #/# right", ("Arial", 16, "bold"), None, 0],
-            ["Choose a colour below. Good luck. 🍀", body_font, "#D5E8D4", 2],
-            ["You chose, result", body_font, "#D5E8D4", 4]
+            ["Answer the question below. Good luck. 🍀", body_font, "#D5E8D4", 2],
+            ["You chose, result", body_font, "#D5E8D4", 4],
+
         ]
 
         play_labels_ref = []
@@ -209,11 +229,7 @@ class Play:
 
             play_labels_ref.append(self.make_label)
 
-        # Retrieve Labels so they can be configured later
-        self.heading_label = play_labels_ref[0]
-        self.target_label = play_labels_ref[1]
-        self.choose_label = play_labels_ref[2]
-        self.results_label = play_labels_ref[3]
+
 
 
         # set up answer buttons...
@@ -228,9 +244,11 @@ class Play:
             self.answer_button = Button(self.answer_frame, font=("Arial", 12),
                                         text="Placeholder", width=15,
                                         command=partial(self.question_results, item))
-            self.answer_button.grid(row=item // 2,
-                                    column=item % 2,
+            self.answer_button.grid(row=item // 4,
+                                    column=item % 4,
                                     padx=5, pady=5)
+
+
 
 
             self.answer_button_ref.append(self.answer_button)
@@ -241,10 +259,10 @@ class Play:
 
             # list for buttons (frame | text | bg | command | width | row | column)
             control_button_list = [
-                [self.game_frame, "Next Round", "#B9BCCC", self.new_question, 21, 5, None],
-                [self.hints_stats_frame, "Hints", "#D9CD94", self.to_hints, 10, 0, 0],
-                [self.hints_stats_frame, "Stats", "#B5C7AA", self.to_stats, 10, 0, 1],
-                [self.game_frame, "End", "#000000", self.close_play, 21, 7, None]
+                [self.game_frame, "Next Round", "#B9BCCC", self.new_question, 20, 5, None],
+                [self.hints_stats_frame, "Hints", "#D9CD94", self.to_hints, 15, 0, 0],
+                [self.hints_stats_frame, "Stats", "#B5C7AA", self.to_stats, 15, 0, 1],
+                [self.game_frame, "End", "#000000", self.close_play, 21, 7, None],
             ]
 
             # create buttons and add to list
@@ -281,18 +299,15 @@ class Play:
         buttons with chosen colours
         """
 
+        print("you pushed the next button")
+
         # retrieve number of questions played , add one to it and configure heading
         questions_played = self.questions_played.get()
         self.questions_played.set(questions_played)
 
         questions_wanted = self.questions_wanted.get()
 
-        # get round colours and median score...
-        self.round_study_of_list = get_question_answers()
 
-        # Update heading and score to beat labels. "Hide" results label
-        self.heading_label.config(text=f"Round {questions_played + 1} of {questions_wanted}")
-        self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
 
 
 
@@ -357,17 +372,6 @@ class Play:
                               f"({questions_won} / {questions_played} "
                               f"({success_rate:.0f}%)")
 
-           # Configure 'end game' labels /buttons
-            self.heading_label.config(text="Game Over")
-            self.target_label.config(text=success_string)
-            self.choose_label.config(text="Please click the stats "
-                                     "button for more info.")
-            self.next_button.config(state=DISABLED, text="Game Over")
-            self.end_game_button.config(text="Play Again", bg="#006600",
-                                        compound="right", width=25)
-
-
-
 
         for item in self.answer_button_ref:
             item.config(state=NORMAL)
@@ -392,7 +396,6 @@ class Play:
         # won as a number rather than the 'self' container
         questions_won = self.questions_won.get()
         questions_played = self.questions_played.get()
-
 
 
 
