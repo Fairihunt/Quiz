@@ -46,19 +46,7 @@ def get_question_answers():
 
     return question_answers
 
-all_questions = get_question_answers()
 
-print("Wrong Answers...")
-
-print()
-print("Ology mode...")
-for item in all_questions[1:]:
-    print(item[0])
-
-print()
-print("Definition mode...")
-for item in all_questions[1:]:
-    print(item[1])
 
 
 
@@ -229,6 +217,11 @@ class Play:
 
             play_labels_ref.append(self.make_label)
 
+        # Retrieve Labels so they can be configured later
+        self.heading_label = play_labels_ref[0]
+        self.target_label = play_labels_ref[1]
+        self.choose_label = play_labels_ref[2]
+        self.results_label = play_labels_ref[2]
 
 
 
@@ -242,16 +235,14 @@ class Play:
         # create four buttons in a 2 x 2 grid
         for item in range(0, 4):
             self.answer_button = Button(self.answer_frame, font=("Arial", 12),
-                                        text="Placeholder", width=15,
+                                        text="Answer Name", width=15,
                                         command=partial(self.question_results, item))
             self.answer_button.grid(row=item // 4,
                                     column=item % 4,
                                     padx=5, pady=5)
 
-
-
-
             self.answer_button_ref.append(self.answer_button)
+
 
             # Frame to hold hints and stats buttons
             self.hints_stats_frame = Frame(self.game_frame)
@@ -305,10 +296,30 @@ class Play:
         questions_played = self.questions_played.get()
         self.questions_played.set(questions_played)
 
+
+
+
         questions_wanted = self.questions_wanted.get()
+        print("questions wanted", questions_wanted)
 
+        all_questions = get_question_answers()
 
+        print("Wrong Answers...")
 
+        print()
+        print("Ology mode...")
+        for item in all_questions[1:]:
+            print(item[0])
+
+        print()
+        print("Definition mode...")
+        for item in all_questions[1:]:
+            print(item[1])
+
+        # Update heading to beat labels.
+        self.heading_label.config(text=f"Round {questions_played + 1} of {questions_wanted}")
+        self.target_label.config()
+        self.results_label.config()
 
 
 
@@ -396,6 +407,7 @@ class Play:
         # won as a number rather than the 'self' container
         questions_won = self.questions_won.get()
         questions_played = self.questions_played.get()
+
 
 
 
