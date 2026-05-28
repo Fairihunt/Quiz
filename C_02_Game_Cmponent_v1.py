@@ -318,8 +318,12 @@ class Play:
 
         # Update heading to beat labels.
         self.heading_label.config(text=f"Round {questions_played + 1} of {questions_wanted}")
-        self.target_label.config()
+        self.target_label.config(text=f"What's the {all_questions[0][1]}? \n\n"
+                                 "Choose the answer below.")
         self.results_label.config()
+
+        # Adding the answer labels into the button frames
+        self.answer_button.config(text=f"{all_questions[0][0]}")
 
 
 
@@ -359,7 +363,7 @@ class Play:
         questions_won = self.questions_won.get()
 
         # alternate way to get button name. Good for if buttons have been scrambled!
-        colour_name = self.answer_button_ref[user_choice].cget('text')
+        answer_name = self.answer_button_ref[user_choice].cget('text')
 
 
 
@@ -407,6 +411,7 @@ class Play:
         # won as a number rather than the 'self' container
         questions_won = self.questions_won.get()
         questions_played = self.questions_played.get()
+
 
 
 
