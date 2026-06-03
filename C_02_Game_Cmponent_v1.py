@@ -130,7 +130,7 @@ class StartGame:
         Check users have entered 1 or more questions
         """
 
-        # Retrieve temperature to be converted
+        # Retrieve questions to be randomised
         questions_wanted = self.num_questions_entry.get()
 
         # Reset label and entry box (for when users come back to home screen)
@@ -253,7 +253,7 @@ class Play:
                 [self.game_frame, "Next Round", "#B9BCCC", self.new_question, 20, 5, None],
                 [self.hints_stats_frame, "Hints", "#D9CD94", self.to_hints, 15, 0, 0],
                 [self.hints_stats_frame, "Stats", "#B5C7AA", self.to_stats, 15, 0, 1],
-                [self.game_frame, "End", "#000000", self.close_play, 21, 7, None],
+                [self.game_frame, "End", "#990000", self.close_play, 21, 7, None],
             ]
 
             # create buttons and add to list
@@ -290,6 +290,8 @@ class Play:
         buttons with chosen colours
         """
 
+        possible_answers = []
+
         print("you pushed the next button")
 
         # retrieve number of questions played , add one to it and configure heading
@@ -316,6 +318,18 @@ class Play:
         for item in all_questions[1:]:
             print(item[1])
 
+        possible_answers = []
+
+        for item in all_questions:
+            # get the first item in each question/answer pair
+            possible = item[0]
+
+            # add the first thing in the pair (the 'ology') to the 'answers'
+            possible_answers.append(possible)
+
+        print(possible_answers)
+
+
         # Update heading to beat labels.
         self.heading_label.config(text=f"Round {questions_played + 1} of {questions_wanted}")
         self.target_label.config(text=f"What's the {all_questions[0][1]}? \n\n"
@@ -325,25 +339,23 @@ class Play:
         # Adding the answer labels into the button frames
         self.answer_button.config(text=f"{all_questions[0][0]}")
 
-
-
-
-
-    def close_play(self):
-        # reshow root (ie:choose questions) and end current
-        # game / allow new game to start
-        root.deiconify()
-        self.play_box.destroy()
+        print("study of...", self.round_study_of)
+        print("all questions", all_questions)
 
         # configure buttons using foreground and background colours from list
         # enable colour buttons (disabled at the end of the last round)
         for count, item in enumerate(self.answer_button_ref):
-            item.config(fg=self.round_study_of[count][2],
-                        bg=self.round_study_of[count][0],
-                        text=self.round_study_of[count][0], state=NORMAL)
+            item.config(text=possible_answers[count], state=NORMAL)
 
 
         self.next_button.config(state=DISABLED)
+
+        self.answer_button_ref.append(self.answer_button)
+
+
+
+
+
 
 
     def question_results(self, user_choice):
@@ -387,10 +399,23 @@ class Play:
                               f"({questions_won} / {questions_played} "
                               f"({success_rate:.0f}%)")
 
+            # Configure 'end game' labels /buttons
+            self.heading_label.config(text="Game Over")
+            self.target_label.config(text=success_string)
+            self.choose_label.config(text="Please click the stats "
+                                          "button for more info.")
+            self.next_button.config(state=DISABLED, text="Game Over")
+            self.end_game_button.config(text="Play Again", bg="#006600",
+                                        compound="right", width=25)
 
         for item in self.answer_button_ref:
             item.config(state=NORMAL)
 
+    def close_play(self):
+        # reshow root (ie:choose questions) and end current
+        # game / allow new game to start
+        root.deiconify()
+        self.play_box.destroy()
 
 
     def to_hints(self):
@@ -412,6 +437,22 @@ class Play:
         questions_won = self.questions_won.get()
         questions_played = self.questions_played.get()
 
+    class DisplayHints:
+        """
+        Displays hints for Colour Quest Game
+        """
+
+        def __init__(self, partner, rounds_played):
+            # setup dialogue box and background colour
+            self.rounds_played = rounds_played
+            background = "#ffe6cc"
+            self.help_box = Toplevel()
+
+            # disable help, stats AND end game buttons to prevent users
+            # from leaving a dialogue open and then going back to the rounds dialogue
+            partner.hints_button.config(state=DISABLED)
+            partner.end_game_button.config(state=DISABLED)
+            partner.stats_button.config(state=DISABLED)
 
 
 
