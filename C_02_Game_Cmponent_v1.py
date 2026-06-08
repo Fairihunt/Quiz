@@ -33,7 +33,7 @@ def get_question_answers():
 
     question_answers = []
 
-    # loop until we have four colours with different scores...
+    # loop until we have four colours...
     while len(question_answers) < 4:
         potential_question = random.choice(all_question_list)
 
@@ -290,8 +290,6 @@ class Play:
         buttons with chosen colours
         """
 
-        possible_answers = []
-
         print("you pushed the next button")
 
         # retrieve number of questions played , add one to it and configure heading
@@ -327,14 +325,12 @@ class Play:
             # add the first thing in the pair (the 'ology') to the 'answers'
             possible_answers.append(possible)
 
-        print(possible_answers)
 
-
-        # Update heading to beat labels.
+        # Update heading to beat labels. Hide results label
         self.heading_label.config(text=f"Round {questions_played + 1} of {questions_wanted}")
         self.target_label.config(text=f"What's the {all_questions[0][1]}? \n\n"
                                  "Choose the answer below.")
-        self.results_label.config()
+        self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
 
         # Adding the answer labels into the button frames
         self.answer_button.config(text=f"{all_questions[0][0]}")
@@ -346,16 +342,6 @@ class Play:
         # enable colour buttons (disabled at the end of the last round)
         for count, item in enumerate(self.answer_button_ref):
             item.config(text=possible_answers[count], state=NORMAL)
-
-
-        self.next_button.config(state=DISABLED)
-
-        self.answer_button_ref.append(self.answer_button)
-
-
-
-
-
 
 
     def question_results(self, user_choice):
@@ -379,12 +365,24 @@ class Play:
 
 
 
+        result_text = f"Correct! Good job!"
+        result_bg = "#82B366"
+
+
         questions_won = self.questions_won.get()
         questions_won += 1
+
         self.questions_won.set(questions_won)
 
 
+        result_text = f"Incorrect! The correct answer is {answer_name}."
+        result_bg = "#F8CECC"
 
+
+        self.results_label.config(text=result_text, bg=result_bg)
+
+        # enable stats & next buttons, disable colour buttons
+        self.next_button.config(state=NORMAL)
 
         # check to see if game is over
         questions_wanted = self.questions_wanted.get()
@@ -409,7 +407,7 @@ class Play:
                                         compound="right", width=25)
 
         for item in self.answer_button_ref:
-            item.config(state=NORMAL)
+            item.config(state=DISABLED)
 
     def close_play(self):
         # reshow root (ie:choose questions) and end current
@@ -453,6 +451,7 @@ class Play:
             partner.hints_button.config(state=DISABLED)
             partner.end_game_button.config(state=DISABLED)
             partner.stats_button.config(state=DISABLED)
+
 
 
 
