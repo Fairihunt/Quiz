@@ -346,6 +346,8 @@ class DisplayHints:
                                         font=("Arial", 14, "bold"))
         self.help_heading_label.grid(row=0)
 
+
+
     # When triggered button, it would disable two incorrect answers for a 50-50 chance for the player.
 
     def close_help(self, partner):

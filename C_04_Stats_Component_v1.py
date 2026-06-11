@@ -61,6 +61,7 @@ class StartGame:
                                   command=self.check_questions)
         self.play_button.grid(row=0, column=1)
 
+
     def check_questions(self):
         """
         Checks users have entered 1 or more questions
@@ -113,7 +114,7 @@ class Play:
         self.game_frame = Frame(self.play_box)
         self.game_frame.grid(padx=10, pady=10)
 
-        self.heading_label = Label(self.game_frame, text="Colour Quest", font=("Arial", 16, "bold"),
+        self.heading_label = Label(self.game_frame, text="Quiz", font=("Arial", 16, "bold"),
                                    padx=5, pady=5)
         self.heading_label.grid(row=0)
 
@@ -128,6 +129,7 @@ class Play:
         """
         Retrieve everything we need to display the game / round statistics
         """
+
 
 
 class Stats:
