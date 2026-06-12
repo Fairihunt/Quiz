@@ -48,10 +48,6 @@ def get_question_answers():
 
 
 
-
-
-
-
 def round_ans(val):
     """
     Rounds numbers to nearest integer
@@ -335,8 +331,7 @@ class Play:
         # Adding the answer labels into the button frames
         self.answer_button.config(text=f"{all_questions[0][0]}")
 
-        print("study of...", self.round_study_of)
-        print("all questions", all_questions)
+
 
         # configure buttons using foreground and background colours from list
         # enable colour buttons (disabled at the end of the last round)
@@ -364,22 +359,26 @@ class Play:
         answer_name = self.answer_button_ref[user_choice].cget('text')
 
 
-
-        result_text = f"Correct! Good job!"
+        result_text = "Correct! Good job!"
         result_bg = "#82B366"
 
 
         questions_won = self.questions_won.get()
         questions_won += 1
 
-        self.questions_won.set(questions_won)
 
 
-        result_text = f"Incorrect! The correct answer is {answer_name}."
+        correct_answer = f"{get_question_answers()}"
+        print(f"{correct_answer}")
+
+
+        result_text = f"Incorrect! The correct answer is {correct_answer}."
         result_bg = "#F8CECC"
 
+        self.questions_won.set(questions_won)
 
         self.results_label.config(text=result_text, bg=result_bg)
+
 
         # enable stats & next buttons, disable colour buttons
         self.next_button.config(state=NORMAL)
@@ -409,6 +408,8 @@ class Play:
         for item in self.answer_button_ref:
             item.config(state=DISABLED)
 
+
+
     def close_play(self):
         # reshow root (ie:choose questions) and end current
         # game / allow new game to start
@@ -435,6 +436,7 @@ class Play:
         questions_won = self.questions_won.get()
         questions_played = self.questions_played.get()
 
+
     class DisplayHints:
         """
         Displays hints for Colour Quest Game
@@ -451,8 +453,6 @@ class Play:
             partner.hints_button.config(state=DISABLED)
             partner.end_game_button.config(state=DISABLED)
             partner.stats_button.config(state=DISABLED)
-
-
 
 
 
