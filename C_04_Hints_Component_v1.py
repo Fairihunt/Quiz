@@ -290,6 +290,8 @@ class Play:
         for item in self.answer_button_ref:
             item.config(state=DISABLED)
 
+
+
     def close_play(self):
         # reshow root (ie:choose questions) and end current
         # game / allow new game to start
@@ -319,9 +321,9 @@ class DisplayHints:
     Disable two answers upon clicking on it.
     """
 
-    def __init__(self, partner, rounds_played):
+    def __init__(self, partner, questions_played):
         # setup dialogue box and background colour
-        self.rounds_played = rounds_played
+        self.questions_played = questions_played
         background = "#ffe6cc"
         self.help_box = Toplevel()
 
