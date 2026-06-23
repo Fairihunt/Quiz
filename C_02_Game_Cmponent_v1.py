@@ -33,12 +33,10 @@ def get_question_answers():
 
     question_answers = []
 
-    # loop until we have four colours...
+    # loop until we have four questions...
     while len(question_answers) < 4:
         potential_question = random.choice(all_question_list)
 
-        # colour scores are being read as a string,
-        # change them to an integer to compare / when adding to score list
         if potential_question[1] not in question_answers:
             question_answers.append(potential_question)
 
@@ -182,6 +180,8 @@ class Play:
 
         self.questions_won = IntVar()
 
+        self.correct_ans = StringVar()
+
         # Colour lists and score list
         self.round_study_of = []
 
@@ -280,6 +280,7 @@ class Play:
 
         self.new_question()
 
+
     def new_question(self):
         """
         Chooses four buttons, works out median for score to beat. Configures
@@ -292,13 +293,26 @@ class Play:
         questions_played = self.questions_played.get()
         self.questions_played.set(questions_played)
 
-
+        # correct_answer = f""
+        # self.correct_ans.set(correct_answer)
 
 
         questions_wanted = self.questions_wanted.get()
         print("questions wanted", questions_wanted)
 
         all_questions = get_question_answers()
+        print("all questions", all_questions)
+
+        print("Correct answer...")
+        print()
+        for item in all_questions[0:1]:
+            print(item[0])
+            print(item[1])
+
+        correct = all_questions[0][0]
+        print("The correct answer is ", correct)
+        self.correct_ans.set(correct)
+
 
         print("Wrong Answers...")
 
@@ -346,6 +360,8 @@ class Play:
         adds results to stats list.
         """
 
+        print(" *** === you are in question results === ****")
+
 
         # Add one to the number of rounds played and retrieve
         # the number of rounds won
@@ -357,56 +373,54 @@ class Play:
 
         # alternate way to get button name. Good for if buttons have been scrambled!
         answer_name = self.answer_button_ref[user_choice].cget('text')
+        print("answer name: ", answer_name)
+
+        that_answer = self.correct_ans.get()
 
 
-        result_text = "Correct! Good job!"
-        result_bg = "#82B366"
+        if answer_name == that_answer:
+            result_text = "Correct! Good job!"
+            result_bg = "#82B366"
+
+            print("==== you got it right!! ==== ")
+
+            questions_won = self.questions_won.get()
+            questions_won += 1
+            self.questions_won.set(questions_won)
+
+        else:
+            result_text = f"Incorrect! The correct answer is {that_answer}."
+            result_bg = "#F8CECC"
+
+            self.results_label.config(text=result_text, bg=result_bg)
+
+            # enable stats & next buttons, disable colour buttons
+            self.next_button.config(state=NORMAL)
+
+            # check to see if game is over
+            questions_wanted = self.questions_wanted.get()
+
+            # Code for when the game ends!
+            if questions_played == questions_wanted:
 
 
-        questions_won = self.questions_won.get()
-        questions_won += 1
+                # work out success rate
+                success_rate = questions_won / questions_played * 100
+                success_string = (f"Success Rate: "
+                                  f"({questions_won} / {questions_played} "
+                                  f"({success_rate:.0f}%)")
 
+                # Configure 'end game' labels /buttons
+                self.heading_label.config(text="Game Over")
+                self.target_label.config(text=success_string)
+                self.choose_label.config(text="Please click the stats "
+                                              "button for more info.")
+                self.next_button.config(state=DISABLED, text="Game Over")
+                self.end_game_button.config(text="Play Again", bg="#006600",
+                                            compound="right", width=25)
 
-
-        correct_answer = f"{get_question_answers()}"
-        print(f"{correct_answer}")
-
-
-        result_text = f"Incorrect! The correct answer is {correct_answer}."
-        result_bg = "#F8CECC"
-
-        self.questions_won.set(questions_won)
-
-        self.results_label.config(text=result_text, bg=result_bg)
-
-
-        # enable stats & next buttons, disable colour buttons
-        self.next_button.config(state=NORMAL)
-
-        # check to see if game is over
-        questions_wanted = self.questions_wanted.get()
-
-        # Code for when the game ends!
-        if questions_played == questions_wanted:
-
-
-            # work out success rate
-            success_rate = questions_won / questions_played * 100
-            success_string = (f"Success Rate: "
-                              f"({questions_won} / {questions_played} "
-                              f"({success_rate:.0f}%)")
-
-            # Configure 'end game' labels /buttons
-            self.heading_label.config(text="Game Over")
-            self.target_label.config(text=success_string)
-            self.choose_label.config(text="Please click the stats "
-                                          "button for more info.")
-            self.next_button.config(state=DISABLED, text="Game Over")
-            self.end_game_button.config(text="Play Again", bg="#006600",
-                                        compound="right", width=25)
-
-        for item in self.answer_button_ref:
-            item.config(state=DISABLED)
+            for item in self.answer_button_ref:
+                item.config(state=DISABLED)
 
 
 
@@ -453,7 +467,6 @@ class Play:
             partner.hints_button.config(state=DISABLED)
             partner.end_game_button.config(state=DISABLED)
             partner.stats_button.config(state=DISABLED)
-
 
 
 # main routine
