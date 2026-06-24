@@ -40,7 +40,6 @@ def get_question_answers():
         if potential_question[1] not in question_answers:
             question_answers.append(potential_question)
 
-    print("question_answers: ", question_answers)
 
     return question_answers
 
@@ -182,7 +181,7 @@ class Play:
 
         self.correct_ans = StringVar()
 
-        # Colour lists and score list
+        # Study of list
         self.round_study_of = []
 
         self.play_box = Toplevel()
@@ -206,7 +205,6 @@ class Play:
 
         play_labels_ref = []
         for item in play_labels_list:
-            print("item", item)
             self.make_label = Label(self.game_frame, text=item[0], font=item[1],
                                     bg=item[2], wraplength=300, justify="left")
             self.make_label.grid(row=item[3], pady=10, padx=10)
@@ -287,8 +285,6 @@ class Play:
         buttons with chosen colours
         """
 
-        print("you pushed the next button")
-
         # retrieve number of questions played , add one to it and configure heading
         questions_played = self.questions_played.get()
         self.questions_played.set(questions_played)
@@ -360,8 +356,6 @@ class Play:
         adds results to stats list.
         """
 
-        print(" *** === you are in question results === ****")
-
 
         # Add one to the number of rounds played and retrieve
         # the number of rounds won
@@ -373,7 +367,6 @@ class Play:
 
         # alternate way to get button name. Good for if buttons have been scrambled!
         answer_name = self.answer_button_ref[user_choice].cget('text')
-        print("answer name: ", answer_name)
 
         that_answer = self.correct_ans.get()
 
@@ -467,6 +460,8 @@ class Play:
             partner.hints_button.config(state=DISABLED)
             partner.end_game_button.config(state=DISABLED)
             partner.stats_button.config(state=DISABLED)
+
+
 
 
 # main routine

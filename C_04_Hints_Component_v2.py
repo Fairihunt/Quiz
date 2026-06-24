@@ -1,5 +1,6 @@
 from tkinter import *
-from functools import partial # To prevent unwanted windows
+from functools import partial
+# To prevent unwanted windows
 
 
 class StartGame:
@@ -46,10 +47,31 @@ class Play:
     """
 
     def __init__ (self, how_many):
+        # Integers / String Variables
+        self.target_score = IntVar()
+
+        # questions played - start with zero
+        self.questions_played = IntVar()
+        self.questions_played.set(0)
+
+        self.questions_wanted = IntVar()
+        self.questions_wanted.set(how_many)
+
+        self.questions_won = IntVar()
+
+        self.correct_ans = StringVar()
+
+        # Study of list
+        self.round_study_of = []
+
         self.play_box = Toplevel()
 
         self.game_frame = Frame(self.play_box)
         self.game_frame.grid(padx=10, pady=10)
+
+        # If users press the 'x' on the game window, end the entire game!
+        self.play_box.protocol('WM_DELETE_WINDOW', root.destroy)
+
 
         self.heading_label = Label(self.game_frame, text="Study of...? Quiz", font=("Arial", 16, "bold"),
                                    padx=5, pady=5)
@@ -59,6 +81,47 @@ class Play:
                                    text="Hints", width=15, fg="#FFFFFF",
                                    bg="#FF8000", padx=10, pady=10, command=self.hints_button)
         self.hints_button.grid(row=1)
+
+        # set up answer buttons...
+        self.answer_frame = Frame(self.game_frame)
+        self.answer_frame.grid(row=3)
+
+        self.answer_button_ref = []
+        self.button_colours_list = []
+
+        # create four buttons in a 2 x 2 grid
+        for item in range(0, 4):
+            self.answer_button = Button(self.answer_frame, font=("Arial", 12),
+                                        text="Answer Name", width=15,
+                                        command=partial(self.question_results, item))
+            self.answer_button.grid(row=item // 4,
+                                    column=item % 4,
+                                    padx=5, pady=5)
+
+            self.answer_button_ref.append(self.answer_button)
+
+
+
+    def question_results(self, user_choice):
+        """
+        Retrieves which button was pushed (index 0 - 3), retrieves
+        score and then compares it with median, updates results and
+        adds results to stats list.
+        """
+
+
+        # Add one to the number of rounds played and retrieve
+        # the number of rounds won
+        questions_played = self.questions_played.get()
+        questions_played += 1
+        self.questions_played.set(questions_played)
+
+        questions_won = self.questions_won.get()
+
+        # alternate way to get button name. Good for if buttons have been scrambled!
+        answer_name = self.answer_button_ref[user_choice].cget('text')
+
+        that_answer = self.correct_ans.get()
 
     def hints_button(self):
         """
@@ -71,11 +134,11 @@ class Play:
 
 class DisplayHints:
     """
-    Displays hints for the qyuz
+    Displays hints for the quiz
     """
 
 
-    def __init__(self, partner):
+    def __init__(self, partner, answer_name):
         # setup dialogue box and background colour
         background = "#ffe6cc"
         self.help_box = Toplevel()
@@ -94,11 +157,11 @@ class DisplayHints:
         self.help_frame.grid()
 
         self.help_heading_label = Label(self.help_frame,
-                                        text="Help / Info",
+                                        text="Help",
                                         font=("Arial", 14, "bold"))
         self.help_heading_label.grid(row=0)
 
-        help_text = "test"
+        help_text = (f"The answer is {answer_name}")
 
         self.help_text_label = Label(self.help_frame,
                                      text=help_text, wraplength=350,
@@ -128,6 +191,7 @@ class DisplayHints:
         # Put help button back to normal...
         partner.hints_button.config(state=NORMAL)
         self.help_box.destroy()
+
 
 
 # main routine
