@@ -100,6 +100,8 @@ class Play:
 
             self.answer_button_ref.append(self.answer_button)
 
+        correct_answer = "test"
+        self.correct_ans.set(correct_answer)
 
 
     def question_results(self, user_choice):
@@ -130,8 +132,6 @@ class Play:
         """
         DisplayHints(self)
 
-
-
 class DisplayHints:
     """
     Displays hints for the quiz
@@ -161,7 +161,7 @@ class DisplayHints:
                                         font=("Arial", 14, "bold"))
         self.help_heading_label.grid(row=0)
 
-        help_text = (f"The answer is {answer_name}")
+        help_text = f"The answer is {answer_name}"
 
         self.help_text_label = Label(self.help_frame,
                                      text=help_text, wraplength=350,
@@ -191,7 +191,6 @@ class DisplayHints:
         # Put help button back to normal...
         partner.hints_button.config(state=NORMAL)
         self.help_box.destroy()
-
 
 
 # main routine

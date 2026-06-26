@@ -12,3 +12,15 @@ for item in all_questions:
     possible_answers.append(possible)
 
 print(possible_answers)
+
+import random
+
+a = [possible_answers]
+
+random.shuffle(a)
+print("After shuffle : ")
+print(a)
+
+random.shuffle(a)
+print("\nSecond shuffle : ")
+print(a)
