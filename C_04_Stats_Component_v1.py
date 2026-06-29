@@ -139,12 +139,9 @@ class Stats:
 
     def __init__(self, partner, all_stats_info):
         # Extract information from master list...
-        rounds_won = all_stats_info[0]
+        questions_won = all_stats_info[0]
         user_scores = all_stats_info[1]
         high_scores = all_stats_info[2]
-
-        # sort user scores to find high score...
-        user_scores.sort()
 
         self.stats_box = Toplevel()
 
@@ -162,7 +159,7 @@ class Stats:
         # Math to populate Stats dialogue
         questions_answered = len(user_scores)
 
-        success_rate = rounds_won / questions_answered * 100
+        success_rate = questions_won / questions_answered * 100
         incorrect_answers = sum(user_scores)
         total_answers = sum(high_scores)
 
@@ -171,7 +168,7 @@ class Stats:
 
         # Strings for Stats label...
 
-        success_string = (f"Success Rate: {rounds_won} / {questions_answered}"
+        success_string = (f"Success Rate: {questions_won} / {questions_answered}"
                           f" ({success_rate:.0f}%")
         incorrect_answers_string = f"Incorrect Answers: {incorrect_answers}"
         total_answers_string = f"Total Answers: {total_answers}"
