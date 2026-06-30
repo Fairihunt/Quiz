@@ -5,8 +5,7 @@ from functools import partial # To prevent unwanted windows
 
 class StartGame:
     """
-    Initial Game interface (asks users how many questions they
-    would like to answer
+    Initial Game interface (asks users how many questions they want to answer
     """
 
     def __init__(self):
@@ -18,17 +17,19 @@ class StartGame:
         self.start_frame.grid()
 
         # Strings for labels
-        intro_string = ("In each round you will be invited to choose a colour. Your goal is "
-                        "to beat the target score and win the round (and keep your points).")
+        intro_string = ("This quiz will ask questions about the study of certain topics. "
+                        "There is no goal but to improve your knowledge and revision on the "
+                        "words of each topic. \n\n"
+                        "Try your best and good luck!")
 
         # choose_string = "Oops - Please choose a whole number more than zero."
-        choose_string = "How many questions do you want to answer?"
+        choose_string = "How many question do you want to answer?"
 
         # List of labels to be made (text | font | fg)
         start_labels_list = [
             ["Study of...? Quiz", ("Arial", 16, "bold"), None],
             [intro_string, ("Arial", 12), None],
-            [choose_string, ("Arial", 12, "bold"), "#009900"]
+            [choose_string, ("Arial", 12, "bold"), "#000000"]
         ]
 
         # Create labels and add them to the reference list
@@ -56,9 +57,9 @@ class StartGame:
 
         # Create play button...
         self.play_button = Button(self.entry_area_frame, font=("Arial", 16, "bold"),
-                                  fg="#FFFFFF", bg="#005708", text="Play", width=10,
+                                  fg="#FFFFFF", bg="#000000", text="Play", width=15,
                                   command=self.check_questions)
-        self.play_button.grid(row=0, column=1)
+        self.play_button.grid(row=1, column=0)
 
     def check_questions(self):
         """
@@ -103,12 +104,23 @@ class StartGame:
 
 class Play:
     """
-    Interface for playing Colour Quest game
+    Interface for playing the round
     """
 
     def __init__(self, how_many):
         self.questions_won = IntVar()
 
+        # Lists for stats component
+
+        # Highest Score Test Data...
+        # self.all_scores_list = [20, 20, 20, 16, 19]
+        # self.all_high_score_list = [20, 20, 20, 16, 19]
+        # self.questions_won.set(5)
+
+        # Lowest Score Test Data...
+        # self.all_scores_list = [0, 0, 0, 0, 0]
+        # self.all_high_score_list = [20 ,20, 20, 16, 19]
+        # self.questions_won.set(0)
 
         # Random Score Test Data...
         self.all_scores_list = [0, 15, 16, 0, 16]
@@ -120,7 +132,7 @@ class Play:
         self.game_frame = Frame(self.play_box)
         self.game_frame.grid(padx=10, pady=10)
 
-        self.heading_label = Label(self.game_frame, text="Colour Quest", font=("Arial", 16, "bold"),
+        self.heading_label = Label(self.game_frame, text="Study of..? Quiz", font=("Arial", 16, "bold"),
                                    padx=5, pady=5)
         self.heading_label.grid(row=0)
 
@@ -131,7 +143,7 @@ class Play:
 
     def to_stats(self):
         """
-        Retrieve everything we need to display the game / round statistics"""
+        Retrieve everything we need to display the game / question statistics"""
 
         # IMPORTANT: retrieve number of questions
         # won as a number (rather than the self container)
@@ -144,17 +156,10 @@ class Play:
 
 class Stats:
     """
-    Displays stats for Colour Quest Game
+    Displays stats for the rounds
     """
 
     def __init__(self, partner, all_stats_info):
-        # Extract information from master list...
-        questions_won = all_stats_info[0]
-        user_scores = all_stats_info[1]
-        high_scores = all_stats_info[2]
-
-        # sort user scores to find high score...
-        user_scores.sort()
 
         self.stats_box = Toplevel()
 
@@ -169,67 +174,6 @@ class Stats:
         self.stats_frame = Frame(self.stats_box, width=350)
         self.stats_frame.grid()
 
-        # Math to populate Stats dialogue
-        questions_played = len(user_scores)
-
-        success_rate = questions_won / questions_played * 100
-        total_score = sum(user_scores)
-        max_possible = sum(high_scores)
-
-        best_score = user_scores[-1]
-        average_score = total_score / questions_played
-
-        # Strings for Stats label...
-
-        success_string = (f"Success Rate: {questions_won} / {questions_played}"
-                          f" ({success_rate:.0f}%")
-        total_score_string = f"Total Score: {total_score}"
-        max_possible_string = f"Maximum Possible Score: {max_possible}"
-        best_score_string = f"Best Score: {best_score}"
-
-        # custom comment text and formatting
-        if total_score == max_possible:
-            comment_string = ("Amazing! You got the highest "
-                              "possible score!")
-            comment_colour = "#D5E8D4"
-
-        elif total_score == 0:
-            comment_string = ("Oops - You've lost every round! "
-                              "You might want to look at the hints!")
-            comment_colour = "#F8CECC"
-            best_score_string = f"Best Score: n/a"
-        else:
-            comment_string = ""
-            comment_colour = "#F0F0F0"
-
-        average_score_string = f"Average Score: {average_score:.0f}\n"
-        heading_font = ("Arial", 16, "bold")
-        normal_font = ("Arial", 14)
-        comment_font = ("Arial", 13)
-
-        # Label list (text | font | 'Sticky')
-        all_stats_strings = [
-            ["Statistics", heading_font, ""],
-            [success_string, normal_font, "W"],
-            [total_score_string, normal_font, "W"],
-            [max_possible_string, normal_font, "W"],
-            [comment_string, comment_font, "W"],
-            ["\nRound Stats", heading_font, ""],
-            [best_score_string, normal_font, "W"],
-            [average_score_string, normal_font, "W"]
-        ]
-
-        stats_label_ref_list = []
-        for count, item in enumerate(all_stats_strings):
-            self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
-                                     anchor="w", justify="left",
-                                     padx=30, pady=5)
-            self.stats_label.grid(row=count, sticky=item[2], padx=10)
-            stats_label_ref_list.append(self.stats_label)
-
-        # Configure comment label background for all won / lost
-        stats_comment_label = stats_label_ref_list[4]
-        stats_comment_label.config(bg=comment_colour)
 
         self.dismiss_button = Button(self.stats_frame,
                                      font=("Arial", 16, "bold"),
