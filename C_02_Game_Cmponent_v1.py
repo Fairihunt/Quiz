@@ -51,7 +51,7 @@ def round_ans(val):
     :param val: number to be rounded.
     :return: Rounded number (an integer)
     """
-    var_rounded = (val * 2 +1) // 2
+    var_rounded = (val * 2 + 1) // 2
     raw_rounded = "{:.0f}".format(var_rounded)
     return int(raw_rounded)
 
@@ -269,12 +269,10 @@ class Play:
 
         # disable stats button at start so that users can't
         # generate stats if they have not played any rounds
-        self.stats_button.config(state=DISABLED)
+        self.stats_button.config(state=NORMAL)
 
         # Once interface has been created, invoke new
         # round function for first round.
-
-
 
         self.new_question()
 
@@ -347,6 +345,8 @@ class Play:
         # enable colour buttons (disabled at the end of the last round)
         for count, item in enumerate(self.answer_button_ref):
             item.config(text=possible_answers[count], state=NORMAL)
+
+
 
 
     def question_results(self, user_choice):
@@ -444,6 +444,7 @@ class Play:
         questions_played = self.questions_played.get()
 
 
+
     class DisplayHints:
         """
         Displays hints for Colour Quest Game
@@ -463,6 +464,103 @@ class Play:
 
 
 
+class Stats:
+    """
+    Displays stats for the rounds
+    """
+
+    def __init__(self, partner, all_stats_info):
+
+        # Extract information from master list...
+
+        questions_won = all_stats_info[0]
+        correct_answers = all_stats_info[1]
+
+        self.stats_box = Toplevel()
+
+        # disable help button
+        partner.stats_button.config(state=DISABLED)
+
+        # If users press cross at top, closes help and
+        # 'releases' help button
+        self.stats_box.protocol('WM_DELETE_WINDOW',
+                                partial(self.close_stats, partner))
+
+        self.stats_frame = Frame(self.stats_box, width=350)
+        self.stats_frame.grid()
+
+        questions_played = len(correct_answers)
+
+        success_rate = questions_won/questions_played * 100
+        total_answers = sum(correct_answers)
+
+        total_correct_answers = correct_answers[-1]
+        average_amount_answers = total_answers / questions_played
+
+        # Strings for Stats label
+
+        success_string = (f"Success Rate: {questions_won} / {questions_played}"
+                          f" ({success_rate:.0f}%)")
+        total_answers_string = f"Total Answers: {total_answers}"
+        total_correct_answers = f"Total Answers Correct: {total_correct_answers}"
+
+        # custom comment text and formatting
+        if total_answers == correct_answers:
+            comment_string = ("Amazing! You got all "
+                              "answers correct!")
+            comment_colour = "#D5E8D4"
+
+        elif total_answers == 0:
+            comment_string = ("You've got every answer incorrect! "
+                              "Might need help from the hints button.")
+            comment_colour = "#F8CECC"
+            correct_answers_string = f"Best Score: n/a"
+        else:
+            comment_string = ""
+            comment_colour = "#F0F0F0"
+
+        average_amount_answers = f"Average Amount: {average_amount_answers:.0f}\n"
+        heading_font = ("Arial", 16, "bold")
+        normal_font = ("Arial", 14)
+        comment_font = ("Arial", 13)
+
+        # Label list (text | font | 'Sticky'
+        all_stats_strings = [
+            ["Statistics", heading_font, ""],
+            [success_string, normal_font, "W"],
+            [total_answers_string, normal_font, "W"],
+            [total_correct_answers, normal_font, "W"],
+            [comment_string, comment_font, "W"],
+            ["\nRound Stats", heading_font, ""],
+            [average_amount_answers, normal_font, "W"]
+        ]
+
+        stats_label_ref_list = []
+        for count, item in enumerate(all_stats_strings):
+            self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
+                                     anchor="w", justify="left",
+                                     padx=30, pady=5)
+            self.stats_label.grid(row=count, sticky=item[2], padx=10)
+            stats_label_ref_list.append(self.stats_label)
+
+        # Configure comment label background for all won / lost
+        stats_command_label = stats_label_ref_list[4]
+        stats_command_label.config(bg=comment_colour)
+
+        self.dismiss_button = Button(self.stats_frame,
+                                     font=("Arial", 16, "bold"),
+                                     text="Dismiss", bg="#333333",
+                                     fg="#FFFFFF", width=20,
+                                     command=partial(self.close_stats,
+                                                     partner))
+        self.dismiss_button.grid(row=8, padx=10, pady=10)
+
+        # closes help dialogue (used by button and x at the top of dialogue
+
+    def close_stats(self, partner):
+        partner.stats_button.config(state=NORMAL)
+        self.stats_box.destroy()
+        
 
 # main routine
 if __name__ == "__main__":

@@ -110,19 +110,6 @@ class Play:
     def __init__(self, how_many):
         self.questions_won = IntVar()
 
-        # Lists for stats component
-
-        # Highest Score Test Data...
-        # self.all_scores_list = [20, 20, 20, 16, 19]
-        # self.all_high_score_list = [20, 20, 20, 16, 19]
-        # self.questions_won.set(5)
-
-        # Lowest Score Test Data...
-        # self.all_scores_list = [0, 0, 0, 0, 0]
-        # self.all_high_score_list = [20 ,20, 20, 16, 19]
-        # self.questions_won.set(0)
-
-        # Random Score Test Data...
         self.all_scores_list = [0, 15, 16, 0, 16]
         self.all_high_score_list = [20, 19, 18, 20, 20]
         self.questions_won.set(3)
@@ -161,6 +148,11 @@ class Stats:
 
     def __init__(self, partner, all_stats_info):
 
+        # Extract information from master list...
+
+        questions_won = all_stats_info[0]
+        correct_answers = all_stats_info[1]
+
         self.stats_box = Toplevel()
 
         # disable help button
@@ -174,6 +166,63 @@ class Stats:
         self.stats_frame = Frame(self.stats_box, width=350)
         self.stats_frame.grid()
 
+        questions_played = len(correct_answers)
+
+        success_rate = questions_won/questions_played * 100
+        total_answers = sum(correct_answers)
+
+        total_correct_answers = correct_answers[-1]
+        average_amount_answers = total_answers / questions_played
+
+        # Strings for Stats label
+
+        success_string = (f"Success Rate: {questions_won} / {questions_played}"
+                          f" ({success_rate:.0f}%)")
+        total_answers_string = f"Total Answers: {total_answers}"
+        total_correct_answers = f"Total Answers Correct: {total_correct_answers}"
+
+        # custom comment text and formatting
+        if total_answers == correct_answers:
+            comment_string = ("Amazing! You got all "
+                              "answers correct!")
+            comment_colour = "#D5E8D4"
+
+        elif total_answers == 0:
+            comment_string = ("You've got every answer incorrect! "
+                              "Might need help from the hints button.")
+            comment_colour = "#F8CECC"
+            correct_answers_string = f"Best Score: n/a"
+        else:
+            comment_string = ""
+            comment_colour = "#F0F0F0"
+
+        average_amount_answers = f"Average Amount: {average_amount_answers:.0f}\n"
+        heading_font = ("Arial", 16, "bold")
+        normal_font = ("Arial", 14)
+        comment_font = ("Arial", 13)
+
+        # Label list (text | font | 'Sticky'
+        all_stats_strings = [
+            ["Statistics", heading_font, ""],
+            [success_string, normal_font, "W"],
+            [total_answers_string, normal_font, "W"],
+            [total_correct_answers, normal_font, "W"],
+            [comment_string, comment_font, "W"],
+            ["\nRound Stats", heading_font, ""],
+            [average_amount_answers, normal_font, "W"]
+        ]
+
+        stats_label_ref_list = []
+        for count, item in enumerate(all_stats_strings):
+            self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
+                                     anchor="w", justify="left",
+                                     padx=30, pady=5)
+            self.stats_label.grid(row=count, sticky=item[2], padx=10)
+            stats_label_ref_list.append(self.stats_label)
+
+        # Configure comment label background for all won / lost
+        stats_command_label = stats_label_ref_list[4]
+        stats_command_label.config(bg=comment_colour)
 
         self.dismiss_button = Button(self.stats_frame,
                                      font=("Arial", 16, "bold"),
@@ -193,7 +242,10 @@ class Stats:
 # main routine
 if __name__ == "__main__":
     root = Tk()
-    root.title("Colour Quest")
+    root.title("Quiz")
     StartGame()
     root.mainloop()
+
+
+
 
