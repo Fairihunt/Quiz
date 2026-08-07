@@ -110,6 +110,8 @@ class Play:
 
         self.questions_won = IntVar()
 
+        self.correct_ans = StringVar()
+
         # Colour lists and score list
         self.round_study_of = []
 
@@ -117,6 +119,8 @@ class Play:
 
         self.game_frame = Frame(self.play_box)
         self.game_frame.grid(padx=10, pady=10)
+
+
 
         # If users press the 'x' on the game window, end the entire game!
         self.play_box.protocol('WM_DELETE_WINDOW', root.destroy)
@@ -251,6 +255,11 @@ class Play:
         adds results to stats list.
         """
 
+        # retrieve string variable answer
+        that_answer = self.correct_ans.get()
+        print("That answer is...", that_answer)
+
+
         # Add one to the number of rounds played and retrieve
         # the number of rounds won
         questions_played = self.questions_played.get()
@@ -314,7 +323,7 @@ class Play:
         Display hints for playing game
         :return:
         """
-        DisplayHints(self)
+
 
 class DisplayHints:
     """

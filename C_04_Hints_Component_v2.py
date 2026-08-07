@@ -1,5 +1,10 @@
+import csv
 from tkinter import *
 from functools import partial
+
+from Sandpit import answers
+
+
 # To prevent unwanted windows
 
 
@@ -7,6 +12,7 @@ class StartGame:
     """
     Initial Game interface (asks users how many rounds they
     would like to play)
+
     """
 
     def __init__(self):
@@ -51,8 +57,8 @@ class Play:
         self.target_score = IntVar()
 
         # questions played - start with zero
-        self.questions_played = IntVar()
-        self.questions_played.set(0)
+        self.questions_answered = IntVar()
+        self.questions_answered.set(0)
 
         self.questions_wanted = IntVar()
         self.questions_wanted.set(how_many)
@@ -100,7 +106,7 @@ class Play:
 
             self.answer_button_ref.append(self.answer_button)
 
-        correct_answer = "test"
+        correct_answer = f"{answers}"
         self.correct_ans.set(correct_answer)
 
 
@@ -114,31 +120,36 @@ class Play:
 
         # Add one to the number of rounds played and retrieve
         # the number of rounds won
-        questions_played = self.questions_played.get()
-        questions_played += 1
-        self.questions_played.set(questions_played)
+        questions_answered = self.questions_answered.get()
+        questions_answered += 1
+        self.questions_answered.set(questions_answered)
 
         questions_won = self.questions_won.get()
 
         # alternate way to get button name. Good for if buttons have been scrambled!
         answer_name = self.answer_button_ref[user_choice].cget('text')
 
-        that_answer = self.correct_ans.get()
+
+
+
 
     def hints_button(self):
         """
         Display hints for playing game
         :return:
         """
-        DisplayHints(self)
+        # checks we have played one round so that
+        # stats button is not enabled in error
+        that_answer = self.correct_ans.get()
+        DisplayHints(self, that_answer)
 
 class DisplayHints:
     """
     Displays hints for the quiz
     """
 
+    def __init__(self, partner, that_answer):
 
-    def __init__(self, partner, answer_name):
         # setup dialogue box and background colour
         background = "#ffe6cc"
         self.help_box = Toplevel()
@@ -161,7 +172,8 @@ class DisplayHints:
                                         font=("Arial", 14, "bold"))
         self.help_heading_label.grid(row=0)
 
-        help_text = f"The answer is {answer_name}"
+        help_text = f"The answer is {that_answer}"
+
 
         self.help_text_label = Label(self.help_frame,
                                      text=help_text, wraplength=350,
@@ -191,6 +203,9 @@ class DisplayHints:
         # Put help button back to normal...
         partner.hints_button.config(state=NORMAL)
         self.help_box.destroy()
+
+
+
 
 
 # main routine

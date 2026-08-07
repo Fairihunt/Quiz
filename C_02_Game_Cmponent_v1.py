@@ -322,6 +322,11 @@ class Play:
 
         possible_answers = []
 
+        answers = possible_answers
+
+        random.shuffle(possible_answers)
+        print(possible_answers)
+
         for item in all_questions:
             # get the first item in each question/answer pair
             possible = item[0]
@@ -339,7 +344,10 @@ class Play:
         # Adding the answer labels into the button frames
         self.answer_button.config(text=f"{all_questions[0][0]}")
 
+        answers = possible_answers
 
+        random.shuffle(possible_answers)
+        print(possible_answers)
 
         # configure buttons using foreground and background colours from list
         # enable colour buttons (disabled at the end of the last round)
@@ -561,6 +569,9 @@ class Stats:
         partner.stats_button.config(state=NORMAL)
         self.stats_box.destroy()
         
+
+
+
 
 # main routine
 if __name__ == "__main__":

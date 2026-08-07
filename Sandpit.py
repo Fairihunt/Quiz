@@ -15,12 +15,24 @@ print(possible_answers)
 
 import random
 
-a = [possible_answers]
+print("before:", possible_answers)
 
-random.shuffle(a)
+answers = possible_answers
+
+random.shuffle(possible_answers)
+print(possible_answers)
+
+random.shuffle(answers)
 print("After shuffle : ")
-print(a)
+print(answers)
 
-random.shuffle(a)
+random.shuffle(answers)
 print("\nSecond shuffle : ")
-print(a)
+print(answers)
+
+
+string = "animal"
+
+shuffled_string = "".join(random.sample(string, len(string)))
+
+print(shuffled_string)

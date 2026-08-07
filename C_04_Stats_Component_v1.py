@@ -123,6 +123,9 @@ class Play:
                                    bg="#FF8000", padx=10, pady=10, command=self.to_stats)
         self.stats_button.grid(row=1)
 
+        # printing area to generate test data for stats.
+        print("all questions",)
+
 
 
     def to_stats(self):
