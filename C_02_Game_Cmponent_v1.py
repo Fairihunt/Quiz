@@ -442,14 +442,7 @@ class Play:
         # stats button is not enabled in error.
         questions_played = self.questions_played.get()
 
-    def to_stats(self):
-        """
-        Retrieves everything we need to display the game / round statistics"""
 
-        # IMPORTANT: retrieve number of rounds
-        # won as a number rather than the 'self' container
-        questions_won = self.questions_won.get()
-        questions_played = self.questions_played.get()
 
 
 
@@ -471,6 +464,19 @@ class Play:
             partner.stats_button.config(state=DISABLED)
 
 
+    def to_stats(self):
+        """
+        Retrieve everything we need to display the game / question statistics"""
+
+        # IMPORTANT: retrieve number of questions
+        # won as a number (rather than the self container)
+        questions_won = self.questions_won.get()
+        questions_played = self.questions_played.get()
+        stats_bundle = [questions_won]
+
+        Stats(self, stats_bundle)
+
+
 
 class Stats:
     """
@@ -482,7 +488,7 @@ class Stats:
         # Extract information from master list...
 
         questions_won = all_stats_info[0]
-        correct_answers = all_stats_info[1]
+        correct_answers = all_stats_info[0]
 
         self.stats_box = Toplevel()
 
@@ -502,15 +508,15 @@ class Stats:
         success_rate = questions_won/questions_played * 100
         total_answers = sum(correct_answers)
 
-        total_correct_answers = correct_answers[-1]
-        average_amount_answers = total_answers / questions_played
+        correct_answers = correct_answers[-1]
+        incorrect_answers = total_answers / questions_played
 
         # Strings for Stats label
 
         success_string = (f"Success Rate: {questions_won} / {questions_played}"
                           f" ({success_rate:.0f}%)")
         total_answers_string = f"Total Answers: {total_answers}"
-        total_correct_answers = f"Total Answers Correct: {total_correct_answers}"
+        correct_answers = f"Questions answered correctly: {correct_answers}"
 
         # custom comment text and formatting
         if total_answers == correct_answers:
@@ -519,28 +525,27 @@ class Stats:
             comment_colour = "#D5E8D4"
 
         elif total_answers == 0:
-            comment_string = ("You've got every answer incorrect! "
-                              "Might need help from the hints button.")
+            comment_string = ("You got some incorrect answers, "
+                              "Might want to check out the hints!")
             comment_colour = "#F8CECC"
-            correct_answers_string = f"Best Score: n/a"
+            correct_answers_string = f"Questions answered correctly: n/a"
         else:
             comment_string = ""
             comment_colour = "#F0F0F0"
 
-        average_amount_answers = f"Average Amount: {average_amount_answers:.0f}\n"
+        incorrect_answers = f"Questions answered incorrectly: {incorrect_answers:.0f}\n"
         heading_font = ("Arial", 16, "bold")
         normal_font = ("Arial", 14)
         comment_font = ("Arial", 13)
 
         # Label list (text | font | 'Sticky'
         all_stats_strings = [
-            ["Statistics", heading_font, ""],
+            ["Statistics Overview", heading_font, ""],
             [success_string, normal_font, "W"],
             [total_answers_string, normal_font, "W"],
-            [total_correct_answers, normal_font, "W"],
+            [correct_answers, normal_font, "W"],
             [comment_string, comment_font, "W"],
-            ["\nRound Stats", heading_font, ""],
-            [average_amount_answers, normal_font, "W"]
+            [incorrect_answers, normal_font, "W"]
         ]
 
         stats_label_ref_list = []
@@ -568,7 +573,6 @@ class Stats:
     def close_stats(self, partner):
         partner.stats_button.config(state=NORMAL)
         self.stats_box.destroy()
-        
 
 
 
