@@ -245,8 +245,6 @@ class Play:
             # list for buttons (frame | text | bg | command | width | row | column)
             control_button_list = [
                 [self.game_frame, "Next Round", "#B9BCCC", self.new_question, 20, 5, None],
-                [self.hints_stats_frame, "Hints", "#D9CD94", self.to_hints, 15, 0, 0],
-                [self.hints_stats_frame, "Stats", "#B5C7AA", self.to_stats, 15, 0, 1],
                 [self.game_frame, "End", "#990000", self.close_play, 21, 7, None],
             ]
 
@@ -262,14 +260,7 @@ class Play:
 
             # Retrieve next, stats and end button so that they can be configured
             self.next_button = control_ref_list[0]
-            self.hints_button = control_ref_list[1]
-            self.stats_button = control_ref_list[2]
-            self.end_game_button = control_ref_list[3]
-
-
-        # disable stats button at start so that users can't
-        # generate stats if they have not played any rounds
-        self.stats_button.config(state=NORMAL)
+            self.end_game_button = control_ref_list[1]
 
         # Once interface has been created, invoke new
         # round function for first round.
@@ -283,6 +274,7 @@ class Play:
         buttons with chosen colours
         """
 
+
         # retrieve number of questions played , add one to it and configure heading
         questions_played = self.questions_played.get()
         self.questions_played.set(questions_played)
@@ -292,40 +284,20 @@ class Play:
 
 
         questions_wanted = self.questions_wanted.get()
-        print("questions wanted", questions_wanted)
+
 
         all_questions = get_question_answers()
-        print("all questions", all_questions)
-
-        print("Correct answer...")
-        print()
-        for item in all_questions[0:1]:
-            print(item[0])
-            print(item[1])
 
         correct = all_questions[0][0]
-        print("The correct answer is ", correct)
         self.correct_ans.set(correct)
 
-
-        print("Wrong Answers...")
-
-        print()
-        print("Ology mode...")
-        for item in all_questions[1:]:
-            print(item[0])
-
-        print()
-        print("Definition mode...")
-        for item in all_questions[1:]:
-            print(item[1])
 
         possible_answers = []
 
         answers = possible_answers
 
         random.shuffle(possible_answers)
-        print(possible_answers)
+
 
         for item in all_questions:
             # get the first item in each question/answer pair
@@ -347,12 +319,12 @@ class Play:
         answers = possible_answers
 
         random.shuffle(possible_answers)
-        print(possible_answers)
 
         # configure buttons using foreground and background colours from list
         # enable colour buttons (disabled at the end of the last round)
         for count, item in enumerate(self.answer_button_ref):
             item.config(text=possible_answers[count], state=NORMAL)
+
 
 
 
@@ -378,16 +350,42 @@ class Play:
 
         that_answer = self.correct_ans.get()
 
+        # check to see if game is over
+        questions_wanted = self.questions_wanted.get()
+
+        # Code for when the game ends!
+        if questions_played == questions_wanted:
+            # work out success rate
+            success_rate = questions_won / questions_played * 100
+            success_string = (f"Success Rate: "
+                              f"({questions_won} / {questions_played} "
+                              f"({success_rate:.0f}%)")
+
+            # Configure 'end game' labels /buttons
+            self.heading_label.config(text="Game Over")
+            self.target_label.config(text=success_string)
+            self.choose_label.config()
+            self.next_button.config(state=DISABLED, text="Game Over")
+            self.end_game_button.config(text="Play Again", bg="#006600",
+                                        compound="right", width=25)
+
+        for item in self.answer_button_ref:
+            item.config(state=DISABLED)
+
 
         if answer_name == that_answer:
             result_text = "Correct! Good job!"
             result_bg = "#82B366"
 
-            print("==== you got it right!! ==== ")
+
 
             questions_won = self.questions_won.get()
             questions_won += 1
             self.questions_won.set(questions_won)
+            self.results_label.config(text=result_text, bg=result_bg)
+
+
+
 
         else:
             result_text = f"Incorrect! The correct answer is {that_answer}."
@@ -408,16 +406,15 @@ class Play:
                 # work out success rate
                 success_rate = questions_won / questions_played * 100
                 success_string = (f"Success Rate: "
-                                  f"({questions_won} / {questions_played} "
+                                  f"({questions_won} / {questions_played}) "
                                   f"({success_rate:.0f}%)")
 
                 # Configure 'end game' labels /buttons
                 self.heading_label.config(text="Game Over")
                 self.target_label.config(text=success_string)
-                self.choose_label.config(text="Please click the stats "
-                                              "button for more info.")
+                self.choose_label.config(text= "Game has ended.")
                 self.next_button.config(state=DISABLED, text="Game Over")
-                self.end_game_button.config(text="Play Again", bg="#006600",
+                self.end_game_button.config(text="Play Again?", bg="#006600",
                                             compound="right", width=25)
 
             for item in self.answer_button_ref:
@@ -432,147 +429,10 @@ class Play:
         self.play_box.destroy()
 
 
-    def to_hints(self):
-        """
-        Display hints for playing game. Prevents users from accessing
-        dialogues that could lead to the program crashing
-        :return:
-        """
-        # checks we have played at least one round so that
-        # stats button is not enabled in error.
-        questions_played = self.questions_played.get()
 
 
 
 
-
-    class DisplayHints:
-        """
-        Displays hints for Colour Quest Game
-        """
-
-        def __init__(self, partner, rounds_played):
-            # setup dialogue box and background colour
-            self.rounds_played = rounds_played
-            background = "#ffe6cc"
-            self.help_box = Toplevel()
-
-            # disable help, stats AND end game buttons to prevent users
-            # from leaving a dialogue open and then going back to the rounds dialogue
-            partner.hints_button.config(state=DISABLED)
-            partner.end_game_button.config(state=DISABLED)
-            partner.stats_button.config(state=DISABLED)
-
-
-    def to_stats(self):
-        """
-        Retrieve everything we need to display the game / question statistics"""
-
-        # IMPORTANT: retrieve number of questions
-        # won as a number (rather than the self container)
-        questions_won = self.questions_won.get()
-        questions_played = self.questions_played.get()
-        stats_bundle = [questions_won]
-
-        Stats(self, stats_bundle)
-
-
-
-class Stats:
-    """
-    Displays stats for the rounds
-    """
-
-    def __init__(self, partner, all_stats_info):
-
-        # Extract information from master list...
-
-        questions_won = all_stats_info[0]
-        correct_answers = all_stats_info[0]
-
-        self.stats_box = Toplevel()
-
-        # disable help button
-        partner.stats_button.config(state=DISABLED)
-
-        # If users press cross at top, closes help and
-        # 'releases' help button
-        self.stats_box.protocol('WM_DELETE_WINDOW',
-                                partial(self.close_stats, partner))
-
-        self.stats_frame = Frame(self.stats_box, width=350)
-        self.stats_frame.grid()
-
-        questions_played = len(correct_answers)
-
-        success_rate = questions_won/questions_played * 100
-        total_answers = sum(correct_answers)
-
-        correct_answers = correct_answers[-1]
-        incorrect_answers = total_answers / questions_played
-
-        # Strings for Stats label
-
-        success_string = (f"Success Rate: {questions_won} / {questions_played}"
-                          f" ({success_rate:.0f}%)")
-        total_answers_string = f"Total Answers: {total_answers}"
-        correct_answers = f"Questions answered correctly: {correct_answers}"
-
-        # custom comment text and formatting
-        if total_answers == correct_answers:
-            comment_string = ("Amazing! You got all "
-                              "answers correct!")
-            comment_colour = "#D5E8D4"
-
-        elif total_answers == 0:
-            comment_string = ("You got some incorrect answers, "
-                              "Might want to check out the hints!")
-            comment_colour = "#F8CECC"
-            correct_answers_string = f"Questions answered correctly: n/a"
-        else:
-            comment_string = ""
-            comment_colour = "#F0F0F0"
-
-        incorrect_answers = f"Questions answered incorrectly: {incorrect_answers:.0f}\n"
-        heading_font = ("Arial", 16, "bold")
-        normal_font = ("Arial", 14)
-        comment_font = ("Arial", 13)
-
-        # Label list (text | font | 'Sticky'
-        all_stats_strings = [
-            ["Statistics Overview", heading_font, ""],
-            [success_string, normal_font, "W"],
-            [total_answers_string, normal_font, "W"],
-            [correct_answers, normal_font, "W"],
-            [comment_string, comment_font, "W"],
-            [incorrect_answers, normal_font, "W"]
-        ]
-
-        stats_label_ref_list = []
-        for count, item in enumerate(all_stats_strings):
-            self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
-                                     anchor="w", justify="left",
-                                     padx=30, pady=5)
-            self.stats_label.grid(row=count, sticky=item[2], padx=10)
-            stats_label_ref_list.append(self.stats_label)
-
-        # Configure comment label background for all won / lost
-        stats_command_label = stats_label_ref_list[4]
-        stats_command_label.config(bg=comment_colour)
-
-        self.dismiss_button = Button(self.stats_frame,
-                                     font=("Arial", 16, "bold"),
-                                     text="Dismiss", bg="#333333",
-                                     fg="#FFFFFF", width=20,
-                                     command=partial(self.close_stats,
-                                                     partner))
-        self.dismiss_button.grid(row=8, padx=10, pady=10)
-
-        # closes help dialogue (used by button and x at the top of dialogue
-
-    def close_stats(self, partner):
-        partner.stats_button.config(state=NORMAL)
-        self.stats_box.destroy()
 
 
 

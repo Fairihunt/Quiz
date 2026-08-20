@@ -110,7 +110,7 @@ class Play:
     def __init__(self, how_many):
         self.questions_won = IntVar()
 
-        self.all_scores_list = [0, 15, 16, 0, 16]
+        self.all_scores_list = [0, 19, 6, 2, 16]
         self.all_high_score_list = [20, 19, 18, 20, 20]
         self.questions_won.set(3)
 
@@ -171,15 +171,15 @@ class Stats:
         success_rate = questions_won/questions_played * 100
         total_answers = sum(correct_answers)
 
-        total_correct_answers = correct_answers[-1]
-        average_amount_answers = total_answers / questions_played
+        correct_answers = correct_answers[-1]
+        incorrect_answers = total_answers / questions_played
 
         # Strings for Stats label
 
         success_string = (f"Success Rate: {questions_won} / {questions_played}"
                           f" ({success_rate:.0f}%)")
         total_answers_string = f"Total Answers: {total_answers}"
-        total_correct_answers = f"Total Answers Correct: {total_correct_answers}"
+        correct_answers = f"Questions answered correctly: {correct_answers}"
 
         # custom comment text and formatting
         if total_answers == correct_answers:
@@ -188,28 +188,27 @@ class Stats:
             comment_colour = "#D5E8D4"
 
         elif total_answers == 0:
-            comment_string = ("You've got every answer incorrect! "
-                              "Might need help from the hints button.")
+            comment_string = ("You got some incorrect answers, "
+                              "Might want to check out the hints!")
             comment_colour = "#F8CECC"
-            correct_answers_string = f"Best Score: n/a"
+            correct_answers_string = f"Questions answered correctly: n/a"
         else:
             comment_string = ""
             comment_colour = "#F0F0F0"
 
-        average_amount_answers = f"Average Amount: {average_amount_answers:.0f}\n"
+        incorrect_answers = f"Questions answered incorrectly: {incorrect_answers:.0f}\n"
         heading_font = ("Arial", 16, "bold")
         normal_font = ("Arial", 14)
         comment_font = ("Arial", 13)
 
         # Label list (text | font | 'Sticky'
         all_stats_strings = [
-            ["Statistics", heading_font, ""],
+            ["Statistics Overview", heading_font, ""],
             [success_string, normal_font, "W"],
             [total_answers_string, normal_font, "W"],
-            [total_correct_answers, normal_font, "W"],
+            [correct_answers, normal_font, "W"],
             [comment_string, comment_font, "W"],
-            ["\nRound Stats", heading_font, ""],
-            [average_amount_answers, normal_font, "W"]
+            [incorrect_answers, normal_font, "W"]
         ]
 
         stats_label_ref_list = []
@@ -239,12 +238,14 @@ class Stats:
         self.stats_box.destroy()
 
 
+
 # main routine
 if __name__ == "__main__":
     root = Tk()
     root.title("Quiz")
     StartGame()
     root.mainloop()
+
 
 
 
